@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GVTX EVENT TERMINAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&family=Quantico:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Futuristic Gold Theme */
+            --gold: #ffcc00;
+            --gold-dark: #b8860b;
+            --gold-glow: rgba(255, 204, 0, 0.4);
+            
+            /* Dark/Main Backgrounds */
+            --bg-body: #030303;
+            --bg-nav: rgba(5, 5, 5, 0.95);
+            --bg-panel: #0a0a0a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            
+            /* Text Colors */
+            --text-main: #ffffff;
+            --text-dim: #999999;
+            
+            /* Accent & UI */
+            --glass-border: rgba(255, 204, 0, 0.15);
+            --transition-main: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            --transition-fast: all 0.1s ease-out;
+            --shadow-gold: 0 0 30px rgba(255, 204, 0, 0.1);
+            --error: #ff4444;
+            --success: #00ff88;
+        }
+
+        .light-theme {
+            --bg-body: #f5f5f7;
+            --bg-nav: rgba(255, 255, 255, 0.95);
+            --bg-panel: #ffffff;
+            --bg-card: rgba(0, 0, 0, 0.03);
+            --text-main: #111111;
+            --text-dim: #555555;
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --shadow-gold: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- GLOBAL RESET & CORE STYLES --- */
+        * {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Poppins', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) #111;
+            user-select: none; /* Hech narsani tanlab bo'lmaydi, harflar ko'k bo'lmaydi */
+        }
+        
+        *::-webkit-scrollbar { width: 6px; }
+        *::-webkit-scrollbar-track { background: #111; }
+        *::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: var(--transition-main);
+            overflow: hidden; 
+            height: 100vh; height: -webkit-fill-available;
+            perspective: 1500px;
+        }
+
+        h1, h2, h3, h4, .font-tech {
+            font-family: 'Quantico', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        button { border: none; outline: none; background: none; cursor: pointer; transition: var(--transition-fast); }
+        input, select { border: none; outline: none; background: none; transition: var(--transition-main); user-select: text; /* Inputlarda yozish uchun */ }
+        a { text-decoration: none; color: inherit; }
+
+        /* ⛔ TELEFON VERSYASI UCHUN BLOKIROVKA OLIB TASHLANDI */
+
+        /* 3D Coin CSS - TEZ AYLANADI */
+        .coin-3d {
+            width: 50px; height: 50px; position: relative;
+            transform-style: preserve-3d; animation: spin3D 3s linear infinite; /* Kichkina tanga tez aylanadi */
+        }
+        .coin-face {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffe066 0%, #ffcc00 50%, #b8860b 100%);
+            border: 2px solid #ffcc00;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Orbitron', sans-serif; font-weight: 900; color: #000;
+            font-size: 20px;
+            backface-visibility: hidden;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+        }
+        .coin-face.front { transform: rotateY(0deg) translateZ(2px); }
+        .coin-face.back { transform: rotateY(180deg) translateZ(2px); }
+        /* Chiziqlar (edge) olib tashlandi */
+        
+        @keyframes spin3D { from {transform: rotateY(0deg);} to {transform: rotateY(360deg);} }
+
+        /* --- MAIN APP LAYOUT (DESKTOP) --- */
+        .desktop-content {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+        }
+
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(var(--glass-border) 1px, transparent 1px),
+                              linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: -1; opacity: 0.15;
+            mask-image: radial-gradient(circle, #fff, transparent 70%);
+        }
+
+        .header {
+            width: 100%; height: 100px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 6%;
+            background-color: var(--bg-nav);
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            position: fixed; top: 0;
+        }
+
+        .balance-container {
+            display: flex; align-items: center; gap: 15px;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--gold);
+            text-shadow: 0 0 15px var(--gold);
+        }
+        .bal-val { font-size: 2rem; font-weight: 700; }
+
+        .profile-btn-nav {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--glass-border);
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.05);
+            background: #1a1a1a;
+        }
+        .profile-btn-nav img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-btn-nav:hover { border-color: var(--gold); transform: scale(1.05); }
+
+        .main-container {
+            flex: 1; padding-top: 100px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .click-title {
+            font-size: 4rem; margin-bottom: 40px;
+            color: var(--text-main);
+            text-align: center;
+            line-height: 1;
+            transform-style: preserve-3d;
+        }
+        .click-title span { color: var(--gold); text-shadow: 0 0 30px var(--gold); }
+
+        /* Big Clickable Tanga - SEKIN AYLANADI (8s) */
+        .tanga-container {
+            position: relative; width: 400px; height: 400px;
+            transform-style: preserve-3d; transition: var(--transition-fast);
+            cursor: pointer;
+        }
+        .tanga-3d-main {
+            width: 100%; height: 100%;
+            position: absolute; transform-style: preserve-3d;
+            animation: mainSpin 8s linear infinite; /* Sekinlashdi (4s -> 8s) */
+        }
+        .tanga-face-main {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            background: radial-gradient(circle, #ffe066 0%, #ffcc00 50%, #b8860b 100%);
+            border: 8px solid #ffcc00; display: flex; justify-content: center; align-items: center;
+            color: #000; font-family: 'Orbitron', sans-serif; font-size: 150px; font-weight: 900;
+            backface-visibility: hidden; box-shadow: 0 0 60px rgba(255, 204, 0, 0.3);
+            /* Chiziqlar olib tashlandi */
+        }
+        .tanga-face-main.f { transform: rotateY(0deg) translateZ(5px); }
+        .tanga-face-main.b { transform: rotateY(180deg) translateZ(5px); }
+        
+        @keyframes mainSpin { from {transform: rotateY(0deg);} to {transform: rotateY(360deg);} }
+        
+        .tanga-container:active { transform: scale(0.96) translateZ(-10px); }
+        
+        .float-tanga {
+            position: absolute; font-family: 'Orbitron'; font-weight: bold;
+            color: var(--gold); font-size: 24px; pointer-events: none;
+            animation: moveUpFade 0.7s ease-out forwards; z-index: 2000;
+            text-shadow: 0 0 15px var(--gold);
+        }
+        @keyframes moveUpFade { 0% {opacity:1; transform: translateY(0);} 100% {opacity:0; transform: translateY(-120px);} }
+
+        .energy-wrap {
+            width: 100%; max-width: 500px;
+            margin-top: 50px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .energy-info {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.9rem; color: var(--text-dim);
+            font-family: 'Quantico';
+        }
+        .bar-outer { width: 100%; height: 16px; background: #1a1a1a; border-radius: 10px; border: 1px solid var(--glass-border); overflow: hidden; }
+        .bar-inner { width: 100%; height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); transition: width 0.1s; box-shadow: 0 0 10px var(--gold-glow); }
+
+        .bottom-nav {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 20px;
+        }
+        .nav-btn-main {
+            background: #0a0a0a; border: 1px solid var(--glass-border);
+            color: var(--gold); padding: 15px 30px; border-radius: 10px;
+            font-family: 'Quantico'; font-weight: 700; font-size: 1.1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .nav-btn-main:hover { border-color: var(--gold); background-color: var(--bg-card); transform: translateY(-3px); }
+
+        /* --- SUB-PAGES (MODALS) --- */
+        .page-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body); z-index: 2000;
+            display: none; padding: 0 6%; padding-top: 100px; 
+            transition: var(--transition-main);
+            overflow-y: auto; scroll-behavior: smooth;
+        }
+        .page-overlay.open { display: block; animation: slideIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        
+        @keyframes slideIn { from {transform: translateX(100%);} to {transform: translateX(0);} }
+
+        .sub-header {
+            width: 100%; padding: 30px 0;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--glass-border); margin-bottom: 40px;
+        }
+        .back-btn-gold {
+            font-family: 'Quantico'; font-weight: bold; color: var(--gold);
+            font-size: 1.1rem; display: flex; align-items: center; gap: 10px;
+        }
+        .back-btn-gold:hover { text-shadow: 0 0 10px var(--gold); }
+        .page-title { color: var(--text-main); font-size: 2.2rem; }
+
+        .shop-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;
+            padding-bottom: 80px;
+        }
+        .shop-card {
+            background: var(--bg-panel); border: 1px solid var(--glass-border);
+            border-radius: 20px; overflow: hidden;
+            display: flex; flex-direction: column; transition: var(--transition-main);
+        }
+        .shop-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: var(--shadow-gold); }
+        
+        .card-img { width: 100%; height: 200px; background: #1a1a1a; position: relative; overflow: hidden; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .card-details {
+            flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .card-price { display: flex; align-items: center; gap: 8px; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; }
+        .card-price-val { font-size: 1.2rem; }
+        .buy-btn-card {
+            margin-top: 15px; width: 100%; background: #ffcc00; color: #000;
+            padding: 15px; border-radius: 10px; font-family: 'Quantico'; font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .buy-btn-card:hover { background: #ffe066; }
+
+        .account-wrap {
+            max-width: 800px; margin: 0 auto;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .avatar-section { position: relative; width: 160px; height: 160px; margin-bottom: 25px; }
+        .avatar-img-acct {
+            width: 100%; height: 100%; border-radius: 50%;
+            border: 4px solid var(--gold); overflow: hidden;
+            box-shadow: 0 0 30px var(--gold-glow); position: relative;
+        }
+        .avatar-img-acct img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .avatar-pencil {
+            position: absolute; bottom: 5px; right: 5px;
+            width: 40px; height: 40px; background: var(--gold);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            border: 3px solid #000; cursor: pointer; color: #000;
+        }
+
+        .user-name { font-size: 1.8rem; color: var(--text-main); margin-bottom: 40px; }
+
+        .settings-card {
+            width: 100%; background: var(--bg-panel); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 30px; margin-bottom: 30px;
+            text-align: center;
+        }
+        .setting-desc { color: var(--text-dim); margin: 10px 0 20px; }
+
+        .theme-buttons { display: flex; justify-content: center; gap: 15px; }
+        .theme-btn-acct {
+            border: 1px solid var(--glass-border); padding: 12px 30px; border-radius: 8px;
+            font-weight: bold; color: var(--text-main); background: #1a1a1a;
+        }
+        .theme-btn-acct:hover { border-color: var(--text-dim); }
+        .theme-btn-acct.active { background: var(--gold); color: #000; border-color: var(--gold); }
+
+        .social-buttons-wrap {
+            width: 100%; display: flex; flex-direction: column; gap: 20px; margin-top: 20px;
+        }
+        .social-btn-acct {
+            width: 100%; padding: 20px; border-radius: 12px;
+            font-weight: bold; font-size: 1.1rem; color: #ffffff;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .discord-btn { background-color: #5865F2; }
+        .telegram-btn { background-color: #0088cc; }
+
+        /* --- REGISTRATION MODAL --- */
+        #regModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000;
+            display: none; justify-content: center; align-items: center;
+        }
+        .reg-card {
+            width: 450px; background: #0a0a0a; border: 1px solid var(--gold);
+            border-radius: 25px; padding: 50px; text-align: center;
+            box-shadow: 0 0 100px var(--gold-glow);
+        }
+        .reg-input {
+            width: 100%; padding: 18px; margin: 12px 0; background: #111;
+            border: 1px solid #333; border-radius: 12px; color: #fff;
+            font-size: 1rem;
+        }
+        .reg-input:focus { border-color: var(--gold); }
+        
+        .date-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .reg-select {
+            width: 100%; padding: 18px; margin: 12px 0; background: #111;
+            border: 1px solid #333; border-radius: 12px; color: #fff;
+            appearance: none;
+        }
+        .reg-select option { background: #0a0a0a; color: #fff; }
+
+        .reg-complete-btn {
+            width: 100%; padding: 20px; background: var(--gold); color: #000;
+            border-radius: 12px; font-weight: bold; margin-top: 20px; font-size: 1.1rem;
+        }
+
+        /* --- MOBILE ADAPTATION --- */
+        @media only screen and (max-width: 1024px) {
+            .desktop-content { min-width: auto; }
+
+            body { font-size: 14px; }
+            .header { height: 70px; padding: 0 5%; }
+            .bal-val { font-size: 1.5rem; }
+            .profile-btn-nav { width: 45px; height: 45px; }
+            .coin-3d { width: 40px; height: 40px; }
+            .coin-face { font-size: 16px; border-width: 1px; }
+
+            .main-container { padding-top: 70px; padding: 10px 5%; }
+            .click-title { font-size: 2.2rem; margin-bottom: 20px; margin-top: 30px; }
+            .tanga-container { width: 250px; height: 250px; }
+            .tanga-face-main { border-width: 4px; font-size: 90px; }
+            
+            .energy-wrap { max-width: 300px; margin-top: 30px; }
+
+            .bottom-nav { bottom: 20px; gap: 10px; width: 90%; }
+            .nav-btn-main { padding: 12px 20px; font-size: 1rem; width: 100%; text-align: center; }
+
+            .sub-header { padding: 20px 0; margin-bottom: 20px; }
+            .page-title { font-size: 1.6rem; }
+            
+            .page-overlay { padding-top: 70px; }
+
+            .shop-grid { grid-template-columns: 1fr; gap: 20px; }
+            .shop-card { border-radius: 15px; }
+            .card-img { height: 180px; }
+            
+            .avatar-section { width: 120px; height: 120px; }
+            .user-name { font-size: 1.4rem; margin-bottom: 30px; }
+            .settings-card { padding: 20px; }
+            .theme-btn-acct { padding: 10px 20px; }
+
+            .reg-card { width: 90%; padding: 30px; }
+            .reg-input, .reg-complete-btn { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="desktop-content">
+        <div class="bg-grid"></div>
+
+        <header class="header">
+            <div class="balance-container">
+                <div class="coin-3d">
+                    <div class="coin-face front">G</div>
+                    <div class="coin-face back">G</div>
+                    </div>
+                <div class="bal-val" id="balDisplay">0</div>
+            </div>
+            <button class="profile-btn-nav" onclick="openPage('profilePage')">
+                <img id="navAvatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+            </button>
+        </header>
+
+        <main class="main-container">
+            <h1 class="click-title" id="mainTitle">CLICK FOR <span>EVENT</span></h1>
+            
+            <div class="tanga-container" id="tapMain">
+                <div class="tanga-3d-main">
+                    <div class="tanga-face-main f">G</div>
+                    <div class="tanga-face-main b">G</div>
+                    </div>
+            </div>
+
+            <div class="energy-wrap">
+                <div class="energy-info">
+                    <span id="energyTxt">LIMIT INFO:</span>
+                    <span id="limitDisplay">1000/1000</span>
+                </div>
+                <div class="bar-outer">
+                    <div class="bar-inner" id="limitBar"></div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="nav-btn-main" onclick="openPage('shopPage')" id="shopBtnNav">MARKET</button>
+            <button class="nav-btn-main" onclick="openPage('profilePage')" id="profileBtnNav">ACCOUNT</button>
+        </nav>
+    </div>
+
+    <div class="page-overlay" id="shopPage">
+        <header class="sub-header">
+            <button class="back-btn-gold" onclick="closePage('shopPage')">← BACK</button>
+            <h2 class="page-title" id="shopTitle">PREMIUM MARKET</h2>
+            <div></div> </header>
+        <div class="shop-grid" id="shopGrid">
+            </div>
+    </div>
+
+    <div class="page-overlay" id="profilePage">
+        <header class="sub-header">
+            <button class="back-btn-gold" onclick="closePage('profilePage')">← BACK</button>
+            <h2 class="page-title" id="acctTitle">USER PROFILE</h2>
+            <button class="nav-btn-main" style="padding: 10px 20px; background:var(--gold); color:#000; font-family:Quantico;" onclick="toggleLang()">EN/RU</button>
+        </header>
+        
+        <div class="account-wrap">
+            <div class="avatar-section">
+                <div class="avatar-img-acct">
+                    <img id="acctAvatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+                </div>
+                <button class="avatar-pencil" onclick="triggerAvatarUpload()">✎</button>
+            </div>
+            <input type="file" id="fileInput" hidden accept="image/*" onchange="uploadAvatar(event)">
+            
+            <h3 class="user-name" id="profileName">USER NAME</h3>
+            
+            <div class="settings-card">
+                <h4 id="themeTitle">THEME SETTINGS</h4>
+                <p class="setting-desc" id="themeDesc">Select interface color mode.</p>
+                <div class="theme-buttons">
+                    <button class="theme-btn-acct active" id="btnThemeDark" onclick="setTheme('dark')">BLACK</button>
+                    <button class="theme-btn-acct" id="btnThemeLight" onclick="setTheme('light')">WHITE</button>
+                </div>
+            </div>
+
+            <div class="social-buttons-wrap">
+                <a href="https://discord.gg/CJYXEBp55" target="_blank" class="social-btn-acct discord-btn">DISCORD SERVER</a>
+                <a href="https://t.me/GVTX2026" target="_blank" class="social-btn-acct telegram-btn">TELEGRAM CHANNEL</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="regModal">
+        <div class="reg-card">
+            <h2 style="color:var(--gold); margin-bottom:20px;">ACCESS TERMINAL</h2>
+            <input type="text" id="regName" class="reg-input" placeholder="Alim Buxalov">
+            <input type="email" id="regEmail" class="reg-input" placeholder="user@domain.com">
+            <div class="date-grid">
+                <select id="regDay" class="reg-select"></select>
+                <select id="regMonth" class="reg-select"></select>
+                <select id="regYear" class="reg-select"></select>
+            </div>
+            <button class="reg-complete-btn" onclick="registerUser()" id="regCompleteBtn">REGISTER</button>
+        </div>
+    </div>
+
+    <script>
+        // Old SCRIPT_URL
+        const SCRIPT_URL = 'SENING_OLD_SCRIPT_URL_SHU_YERGA';
+        
+        // --- GAME STATE ---
+        let coins = parseInt(localStorage.getItem('gvtx_game_bal')) || 0;
+        let limit = parseInt(localStorage.getItem('gvtx_game_limit')) || 1000;
+        const maxLimit = 1000;
+        let activeLang = 'EN';
+        
+        const codesList = [ "CODE_Ab989nu", "CODE_Zx776vbn", "CODE_Qw112ert", "CODE_Pl990kjh", "CODE_Mn554bvc", "CODE_Po332lkj" ];
+
+        const dict = {
+            EN: {
+                mainTitle: 'CLICK FOR <span>EVENT</span>', energy: 'LIMIT:', back: '← BACK',
+                market: 'MARKET', account: 'ACCOUNT',
+                shopT: 'PREMIUM MARKET', acctT: 'USER PROFILE',
+                buy: 'BUY', lowBal: 'NOT ENOUGH COINS!', successP: 'PURCHASE SUCCESSFUL!',
+                theme: 'THEME SETTINGS', themeDesc: 'Select interface color mode.', dark: 'BLACK', light: 'WHITE',
+                regTitle: 'ACCESS TERMINAL', regP: 'Please fill all details!', regSuccess: 'Registered successfully!',
+                emailAcct: 'Secure Email', birthD: 'Birth Date', completeR: 'REGISTER',
+                needReg: 'Register first!', codesMsj: 'Send this code cekpetboy@gmail.com'
+            },
+            RU: {
+                mainTitle: 'КЛИК ДЛЯ <span>ИВЕНТА</span>', energy: 'ЛИМИТ:', back: '← НАЗАД',
+                market: 'МАГAЗИH', account: 'АККАУНТ',
+                shopT: 'ПРЕМИУМ МАГAЗИH', acctT: 'ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ',
+                buy: 'КУПИТЬ', lowBal: 'НЕ ХВАТАЕТ GVTX!', successP: 'ПОКУПКА УСПЕШНА!',
+                theme: 'НАСТРОЙКИ ТЕМЫ', themeDesc: 'Выберите цветовой режим.', dark: 'ТЕМНАЯ', light: 'СВЕТЛАЯ',
+                regTitle: 'ТЕРМИНАL ДОСТУПА', regP: 'Заполните все данные!', regSuccess: 'Регистрация успешна!',
+                emailAcct: 'Эл. Почта', birthD: 'Дата рождения', completeR: 'РЕГИСТРАЦИЯ',
+                needReg: 'Сначала зарегистрируйтесь!', codesMsj: 'Отправьте код на cekpetboy@gmail.com'
+            }
+        };
+
+        // --- INIT ---
+        window.onload = () => {
+            if(!localStorage.getItem('gvtx_event_reg')) {
+                document.getElementById('regModal').style.display = 'flex';
+                setupRegSelects();
+                updateLang(); // Reg oynasi uchun tilni sozlash
+            } else {
+                initApp();
+            }
+        };
+
+        function initApp() {
+            coins = parseInt(localStorage.getItem('gvtx_game_bal')) || 0;
+            limit = parseInt(localStorage.getItem('gvtx_game_limit')) || 1000;
+            
+            updateGameUI();
+            fillShop();
+            setupProfile();
+            startRegen();
+            updateLang();
+            setTheme(localStorage.getItem('gvtx_theme') || 'dark');
+        }
+
+        function setupRegSelects() {
+            const d=document.getElementById('regDay'), m=document.getElementById('regMonth'), y=document.getElementById('regYear');
+            for(let i=1;i<=31;i++) d.innerHTML+=`<option value="${i}">${i}</option>`;
+            for(let i=1;i<=12;i++) m.innerHTML+=`<option value="${i}">${i}</option>`;
+            for(let i=1990;i<=2011;i++) y.innerHTML+=`<option value="${i}">${i}</option>`;
+        }
+
+        function registerUser() {
+            const n=document.getElementById('regName').value, e=document.getElementById('regEmail').value;
+            const d=document.getElementById('regDay').value, m=document.getElementById('regMonth').value, y=document.getElementById('regYear').value;
+            const t = dict[activeLang];
+            if(!n || !e || d==="" || m==="" || y==="") return alert(t.regP);
+
+            const timestamp = new Date().toLocaleString();
+            const birthDate = `${d}/${m}/${y}`; // Tugilgan sana logikasi
+
+            localStorage.setItem('gvtx_event_reg', 'true');
+            localStorage.setItem('gvtx_u_name', n);
+            localStorage.setItem('gvtx_game_bal', '0');
+            localStorage.setItem('gvtx_game_limit', '1000');
+            
+            document.getElementById('regModal').style.display = 'none';
+            initApp();
+            
+            const formData = new FormData();
+            formData.append('name', n); formData.append('email', e); formData.append('birthDate', birthDate); formData.append('timestamp', timestamp);
+            fetch(SCRIPT_URL, { method: 'POST', body: formData, mode: 'no-cors' }).catch(err=>console.log(err));
+        }
+
+        // --- MINING / CLICKER ---
+        const tapArea = document.getElementById('tapMain');
+        tapArea.addEventListener('touchstart', (e)=>{ e.preventDefault(); handleTap(e.touches[0].clientX, e.touches[0].clientY); });
+        tapArea.addEventListener('mousedown', (e)=>{ handleTap(e.clientX, e.clientY); });
+
+        function handleTap(x,y) {
+            if(!localStorage.getItem('gvtx_event_reg')) { return; }
+            if(limit > 0) {
+                coins += 1; limit -= 1;
+                createFloatTanga(x,y);
+                updateGameUI();
+                saveState();
+            } else { tapArea.style.opacity = '0.5'; }
+        }
+
+        function createFloatTanga(x,y) {
+            const el = document.createElement('div'); el.className = 'float-tanga'; el.innerText='+1';
+            el.style.left = (x - 20) + 'px'; el.style.top = (y - 20) + 'px';
+            document.body.appendChild(el); setTimeout(()=>el.remove(), 700);
+        }
+
+        function updateGameUI() {
+            document.getElementById('balDisplay').innerText = coins.toLocaleString();
+            document.getElementById('limitDisplay').innerText = `${limit}/${maxLimit}`;
+            document.getElementById('limitBar').style.width = (limit / maxLimit * 100) + '%';
+            if(limit > 0) tapArea.style.opacity = '1';
+        }
+
+        function startRegen() {
+            setInterval(()=>{
+                if(limit < maxLimit) {
+                    limit += 1; 
+                    updateGameUI();
+                }
+            }, 1000); // Sekundiga limit
+        }
+
+        function saveState() {
+            localStorage.setItem('gvtx_game_bal', coins);
+            localStorage.setItem('gvtx_game_limit', limit);
+        }
+
+        // --- SHOP ---
+        function fillShop() {
+            const grid = document.getElementById('shopGrid');
+            const t = dict[activeLang];
+            grid.innerHTML = '';
+            for(let i=1;i<=6;i++){
+                grid.innerHTML += `
+                <div class="shop-card">
+                    <div class="card-img">
+                        <img src="${i}.png" alt="Item"> 
+                    </div>
+                    <div class="card-details">
+                        <div class="card-price">
+                            <div class="coin-3d" style="width:25px; height:25px;">
+                                <div class="coin-face f" style="font-size:12px; border-width:1px;">G</div>
+                                <div class="coin-face b" style="font-size:12px; border-width:1px;">G</div>
+                            </div>
+                            <span class="card-price-val">2M</span>
+                        </div>
+                        <button class="buy-btn-card buy-item" onclick="buyItem(${i-1}, this)">${t.buy}</button>
+                    </div>
+                </div>`;
+            }
+        }
+
+        function buyItem(idx, btn) {
+            const t = dict[activeLang];
+            if(coins >= 2000000) {
+                coins -= 2000000;
+                updateGameUI();
+                saveState();
+                alert(`${t.successP}\\n\\nKOD: ${codesList[idx]}\\n\\n${t.codesMsj}`);
+            } else {
+                btn.style.background = 'red'; btn.innerText = t.lowBal;
+                setTimeout(()=>{ btn.style.background = 'var(--gold)'; btn.innerText = t.buy; }, 2000);
+            }
+        }
+
+        // --- PROFILE & SETTINGS ---
+        function setupProfile() {
+            document.getElementById('profileName').innerText = localStorage.getItem('gvtx_u_name');
+            const pic = localStorage.getItem('gvtx_avatar');
+            if(pic) {
+                document.getElementById('navAvatar').src=pic;
+                document.getElementById('acctAvatar').src=pic;
+            }
+        }
+
+        function triggerAvatarUpload() { document.getElementById('fileInput').click(); }
+        function uploadAvatar(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (f) => {
+                const url = f.target.result;
+                document.getElementById('navAvatar').src=url;
+                document.getElementById('acctAvatar').src=url;
+                localStorage.setItem('gvtx_avatar', url);
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function setTheme(theme) {
+            if(theme === 'light') {
+                document.body.classList.add('light-theme');
+                document.getElementById('btnThemeLight').classList.add('active');
+                document.getElementById('btnThemeDark').classList.remove('active');
+                localStorage.setItem('gvtx_theme', 'light');
+            } else {
+                document.body.classList.remove('light-theme');
+                document.getElementById('btnThemeDark').classList.add('active');
+                document.getElementById('btnThemeLight').classList.remove('active');
+                localStorage.setItem('gvtx_theme', 'dark');
+            }
+        }
+
+        function toggleLang() {
+            activeLang = activeLang === 'EN' ? 'RU' : 'EN';
+            updateLang();
+            if(localStorage.getItem('gvtx_event_reg')) fillShop(); 
+        }
+
+        function updateLang() {
+            const t = dict[activeLang];
+            
+            // Reg Modal
+            const regTitle = document.querySelector('#regModal h2');
+            if(regTitle) regTitle.innerText = t.regTitle;
+            const regNameInp = document.getElementById('regName');
+            if(regNameInp) regNameInp.placeholder = activeLang === 'EN' ? 'Alim Buxalov' : 'Алим Бухалов';
+            const regEmailInp = document.getElementById('regEmail');
+            if(regEmailInp) regEmailInp.placeholder = activeLang === 'EN' ? 'user@domain.com' : 'почта@домен.рф';
+            const regBtn = document.getElementById('regCompleteBtn');
+            if(regBtn) regBtn.innerText = t.completeR;
+
+            if(!localStorage.getItem('gvtx_event_reg')) return;
+
+            // Main App
+            document.getElementById('mainTitle').innerHTML = t.mainTitle;
+            document.getElementById('energyTxt').innerText = t.energy;
+            document.getElementById('shopBtnNav').innerText = t.market;
+            document.getElementById('profileBtnNav').innerText = t.account;
+            document.getElementById('shopTitle').innerText = t.shopT;
+            document.getElementById('acctTitle').innerText = t.acctT;
+            document.getElementById('themeTitle').innerText = t.theme;
+            document.getElementById('themeDesc').innerText = t.themeDesc;
+            document.getElementById('btnThemeDark').innerText = t.dark;
+            document.getElementById('btnThemeLight').innerText = t.light;
+            document.querySelectorAll('.back-btn-gold').forEach(b=>b.innerText = t.back);
+        }
+
+        function openPage(id) { document.getElementById(id).classList.add('open'); }
+        function closePage(id) { document.getElementById(id).classList.remove('open'); }
+    </script>
+</body>
+</html>

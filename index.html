@@ -731,5 +731,56 @@
         function openPage(id) { document.getElementById(id).classList.add('open'); }
         function closePage(id) { document.getElementById(id).classList.remove('open'); }
     </script>
+    <script>
+    // --- GOOGLE SHEETS BILAN BOG'LASH QISMI (YANGI) ---
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzWC_jYDvWzh241tapSY7LYrI0pS9Dn0tMIZyM14Eje1UXmQoMBHzSD9HNb8v29GPvl/exec';
+    
+    // 1. Ro'yxatdan o'tish funksiyasini yangilash
+    // Sizning eski registerUser funksiyangizni o'rnini bosadi yoki unga qo'shiladi
+    const originalRegisterUser = window.registerUser;
+    window.registerUser = function() {
+        // Avval sizning kodingizdagi amallarni bajaradi
+        if (typeof originalRegisterUser === "function") originalRegisterUser();
+        
+        // Keyin Google Sheetsga yuboradi
+        const n = document.getElementById('regName').value;
+        const e = document.getElementById('regEmail').value;
+        const d = document.getElementById('regDay').value;
+        const m = document.getElementById('regMonth').value;
+        const y = document.getElementById('regYear').value;
+        
+        if (n && e) {
+            localStorage.setItem('gvtx_u_email', e); // Emailni saqlab qolamiz
+            const formData = new FormData();
+            formData.append('action', 'register');
+            formData.append('fish', n);
+            formData.append('email', e);
+            formData.append('sana', `${d}/${m}/${y}`);
+            formData.append('tangalar', typeof coins !== 'undefined' ? coins : 0);
+            
+            fetch(GOOGLE_SHEET_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+        }
+    };
+    
+    // 2. Tangalarni avtomatik saqlash funksiyasi
+    function cloudSave() {
+        const email = localStorage.getItem('gvtx_u_email');
+        if (!email || typeof coins === 'undefined') return;
+        
+        const formData = new FormData();
+        formData.append('action', 'update');
+        formData.append('email', email);
+        formData.append('tangalar', coins);
+        
+        fetch(GOOGLE_SHEET_URL, { method: 'POST', body: formData, mode: 'no-cors' })
+            .then(() => console.log("Data synced with Google Sheets"));
+    }
+    
+    // Har 30 soniyada saqlash
+    setInterval(cloudSave, 5000);
+    
+    // O'yinchi sahifadan chiqib ketayotganda saqlash
+    window.addEventListener('beforeunload', cloudSave);
+</script>
 </body>
 </html>

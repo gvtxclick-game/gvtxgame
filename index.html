@@ -480,18 +480,31 @@
             <h2 style="color:var(--gold); margin-bottom:20px;">ACCESS TERMINAL</h2>
             <input type="text" id="regName" class="reg-input" placeholder="Alim Buxalov">
             <input type="email" id="regEmail" class="reg-input" placeholder="user@domain.com">
+            <input type="password"
+id="regPassword"
+class="reg-input"
+placeholder="Password">
             <div class="date-grid">
                 <select id="regDay" class="reg-select"></select>
                 <select id="regMonth" class="reg-select"></select>
                 <select id="regYear" class="reg-select"></select>
             </div>
             <button class="reg-complete-btn" onclick="registerUser()" id="regCompleteBtn">REGISTER</button>
+            <div style="margin-top:20px;">
+    <span
+    style="color:#00ff88;cursor:pointer;font-weight:bold;"
+    onclick="openLogin()"
+    id="loginOpenText">
+
+    Already have account?
+    </span>
+</div>
         </div>
     </div>
 
     <script>
         // Old SCRIPT_URL
-        const SCRIPT_URL = 'SENING_OLD_SCRIPT_URL_SHU_YERGA';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_vNXVG8ozEChgk6hYokw4lpsZKmYF6TjEdpUv9VZA7Z6Vb4Y92778eU6fxa_An8Zf/exec';
         
         // --- GAME STATE ---
         let coins = parseInt(localStorage.getItem('gvtx_game_bal')) || 0;
@@ -555,26 +568,44 @@
         }
 
         function registerUser() {
-            const n=document.getElementById('regName').value, e=document.getElementById('regEmail').value;
-            const d=document.getElementById('regDay').value, m=document.getElementById('regMonth').value, y=document.getElementById('regYear').value;
-            const t = dict[activeLang];
-            if(!n || !e || d==="" || m==="" || y==="") return alert(t.regP);
-
-            const timestamp = new Date().toLocaleString();
-            const birthDate = `${d}/${m}/${y}`; // Tugilgan sana logikasi
-
-            localStorage.setItem('gvtx_event_reg', 'true');
-            localStorage.setItem('gvtx_u_name', n);
-            localStorage.setItem('gvtx_game_bal', '0');
-            localStorage.setItem('gvtx_game_limit', '1000');
-            
-            document.getElementById('regModal').style.display = 'none';
-            initApp();
-            
-            const formData = new FormData();
-            formData.append('name', n); formData.append('email', e); formData.append('birthDate', birthDate); formData.append('timestamp', timestamp);
-            fetch(SCRIPT_URL, { method: 'POST', body: formData, mode: 'no-cors' }).catch(err=>console.log(err));
-        }
+    
+    const n = document.getElementById('regName').value;
+    const e = document.getElementById('regEmail').value;
+const p = document.getElementById('regPassword').value;
+    
+    const d = document.getElementById('regDay').value;
+    const m = document.getElementById('regMonth').value;
+    const y = document.getElementById('regYear').value;
+    
+    const t = dict[activeLang];
+    
+    if (!n || !e || !p) {
+        return alert(t.regP);
+    }
+    
+    localStorage.setItem('gvtx_event_reg', 'true');
+    localStorage.setItem('gvtx_u_name', n);
+    localStorage.setItem('gvtx_u_email', e);
+    localStorage.setItem('gvtx_u_password', p);
+    
+    const formData = new FormData();
+    
+    formData.append('action', 'register');
+    formData.append('fish', n);
+    formData.append('email', e);
+    formData.append('password', p);
+    formData.append('sana', `${d}/${m}/${y}`);
+    formData.append('tangalar', 0);
+    
+    fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        body: formData
+    });
+    
+    document.getElementById('regModal').style.display = 'none';
+    
+    initApp();
+}
 
         // --- MINING / CLICKER ---
         const tapArea = document.getElementById('tapMain');
@@ -733,34 +764,7 @@
     </script>
     <script>
     // --- GOOGLE SHEETS BILAN BOG'LASH QISMI (YANGI) ---
-    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzWC_jYDvWzh241tapSY7LYrI0pS9Dn0tMIZyM14Eje1UXmQoMBHzSD9HNb8v29GPvl/exec';
-    
-    // 1. Ro'yxatdan o'tish funksiyasini yangilash
-    // Sizning eski registerUser funksiyangizni o'rnini bosadi yoki unga qo'shiladi
-    const originalRegisterUser = window.registerUser;
-    window.registerUser = function() {
-        // Avval sizning kodingizdagi amallarni bajaradi
-        if (typeof originalRegisterUser === "function") originalRegisterUser();
-        
-        // Keyin Google Sheetsga yuboradi
-        const n = document.getElementById('regName').value;
-        const e = document.getElementById('regEmail').value;
-        const d = document.getElementById('regDay').value;
-        const m = document.getElementById('regMonth').value;
-        const y = document.getElementById('regYear').value;
-        
-        if (n && e) {
-            localStorage.setItem('gvtx_u_email', e); // Emailni saqlab qolamiz
-            const formData = new FormData();
-            formData.append('action', 'register');
-            formData.append('fish', n);
-            formData.append('email', e);
-            formData.append('sana', `${d}/${m}/${y}`);
-            formData.append('tangalar', typeof coins !== 'undefined' ? coins : 0);
-            
-            fetch(GOOGLE_SHEET_URL, { method: 'POST', body: formData, mode: 'no-cors' });
-        }
-    };
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycby_vNXVG8ozEChgk6hYokw4lpsZKmYF6TjEdpUv9VZA7Z6Vb4Y92778eU6fxa_An8Zf/exec';
     
     // 2. Tangalarni avtomatik saqlash funksiyasi
     function cloudSave() {
@@ -781,6 +785,110 @@
     
     // O'yinchi sahifadan chiqib ketayotganda saqlash
     window.addEventListener('beforeunload', cloudSave);
+    
+    function openLogin() {
+    document.getElementById('loginModal').style.display = 'flex';
+    document.getElementById('regModal').style.display = 'none';
+}
+
+function closeLogin() {
+    document.getElementById('loginModal').style.display = 'none';
+}
+
+function registerUser() {
+    
+    const n = document.getElementById('regName').value;
+    const e = document.getElementById('regEmail').value;
+    const p = document.getElementById('regPassword').value;
+    
+    const d = document.getElementById('regDay').value;
+    const m = document.getElementById('regMonth').value;
+    const y = document.getElementById('regYear').value;
+    
+    const t = dict[activeLang];
+    
+    if (!n || !e || !p) {
+        return alert(t.regP);
+    }
+    
+    localStorage.setItem('gvtx_event_reg', 'true');
+    localStorage.setItem('gvtx_u_name', n);
+    localStorage.setItem('gvtx_u_email', e);
+    localStorage.setItem('gvtx_u_password', p);
+    
+    const formData = new FormData();
+    
+    formData.append('action', 'register');
+    formData.append('fish', n);
+    formData.append('email', e);
+    formData.append('password', p);
+    formData.append('sana', `${d}/${m}/${y}`);
+    formData.append('tangalar', 0);
+    
+    fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+    });
+    
+    document.getElementById('regModal').style.display = 'none';
+    
+    initApp();
+}
+    
 </script>
+
+<div id="loginModal" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:99999;
+">
+
+<div class="reg-card">
+
+<h2 style="color:var(--gold);margin-bottom:20px;" id="loginTitle">
+LOGIN
+</h2>
+
+<input
+type="email"
+id="loginEmail"
+class="reg-input"
+placeholder="Email">
+
+<input
+type="password"
+id="loginPassword"
+class="reg-input"
+placeholder="Password">
+
+<button
+class="reg-complete-btn"
+onclick="loginAccount()"
+id="loginBtn">
+LOGIN
+</button>
+
+<br><br>
+
+<span
+style="color:#00ff88;cursor:pointer;"
+onclick="
+document.getElementById('loginModal').style.display='none';
+document.getElementById('regModal').style.display='flex';
+">
+Register
+</span>
+
+</div>
+</div>
+
 </body>
 </html>

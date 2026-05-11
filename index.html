@@ -347,44 +347,289 @@
             border-radius: 12px; font-weight: bold; margin-top: 20px; font-size: 1.1rem;
         }
 
-        /* --- MOBILE ADAPTATION --- */
-        @media only screen and (max-width: 1024px) {
-            .desktop-content { min-width: auto; }
-
-            body { font-size: 14px; }
-            .header { height: 70px; padding: 0 5%; }
-            .bal-val { font-size: 1.5rem; }
-            .profile-btn-nav { width: 45px; height: 45px; }
-            .coin-3d { width: 40px; height: 40px; }
-            .coin-face { font-size: 16px; border-width: 1px; }
-
-            .main-container { padding-top: 70px; padding: 10px 5%; }
-            .click-title { font-size: 2.2rem; margin-bottom: 20px; margin-top: 30px; }
-            .tanga-container { width: 250px; height: 250px; }
-            .tanga-face-main { border-width: 4px; font-size: 90px; }
-            
-            .energy-wrap { max-width: 300px; margin-top: 30px; }
-
-            .bottom-nav { bottom: 20px; gap: 10px; width: 90%; }
-            .nav-btn-main { padding: 12px 20px; font-size: 1rem; width: 100%; text-align: center; }
-
-            .sub-header { padding: 20px 0; margin-bottom: 20px; }
-            .page-title { font-size: 1.6rem; }
-            
-            .page-overlay { padding-top: 70px; }
-
-            .shop-grid { grid-template-columns: 1fr; gap: 20px; }
-            .shop-card { border-radius: 15px; }
-            .card-img { height: 180px; }
-            
-            .avatar-section { width: 120px; height: 120px; }
-            .user-name { font-size: 1.4rem; margin-bottom: 30px; }
-            .settings-card { padding: 20px; }
-            .theme-btn-acct { padding: 10px 20px; }
-
-            .reg-card { width: 90%; padding: 30px; }
-            .reg-input, .reg-complete-btn { padding: 15px; }
-        }
+        /* --- PERFECT MOBILE UI --- */
+@media only screen and (max-width: 1024px) {
+    
+    html,
+    body {
+        width: 100%;
+        overflow-x: hidden;
+        touch-action: manipulation;
+    }
+    
+    body {
+        font-size: 14px;
+    }
+    
+    .desktop-content {
+        width: 100%;
+        min-width: 100%;
+    }
+    
+    .bg-grid {
+        background-size: 35px 35px;
+        opacity: .12;
+    }
+    
+    /* HEADER */
+    .header {
+        height: 75px;
+        padding: 0 15px;
+    }
+    
+    .balance-container {
+        gap: 10px;
+    }
+    
+    .bal-val {
+        font-size: 1.4rem;
+    }
+    
+    .coin-3d {
+        width: 38px;
+        height: 38px;
+    }
+    
+    .coin-face {
+        font-size: 15px;
+    }
+    
+    .profile-btn-nav {
+        width: 45px;
+        height: 45px;
+        flex-shrink: 0;
+    }
+    
+    /* MAIN */
+    .main-container {
+        padding-top: 90px;
+        padding-left: 18px;
+        padding-right: 18px;
+        justify-content: flex-start;
+    }
+    
+    .click-title {
+        font-size: 2rem;
+        line-height: 1.1;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+        word-break: break-word;
+    }
+    
+    .tanga-container {
+        width: 240px;
+        height: 240px;
+        max-width: 90vw;
+        max-height: 90vw;
+    }
+    
+    .tanga-face-main {
+        font-size: 90px;
+        border-width: 5px;
+    }
+    
+    .energy-wrap {
+        width: 100%;
+        max-width: 340px;
+        margin-top: 35px;
+    }
+    
+    .energy-info {
+        font-size: .9rem;
+    }
+    
+    .bar-outer {
+        height: 14px;
+    }
+    
+    /* NAVIGATION */
+    .bottom-nav {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    display: flex;
+    gap: 10px;
+    
+    width: auto;
+    padding: 0;
+    
+    background: none;
+    backdrop-filter: none;
+    border: none;
+    z-index: 999;
+}
+    
+    .nav-btn-main {
+    padding: 12px 18px;
+    font-size: .9rem;
+    border-radius: 14px;
+    white-space: nowrap;
+    
+    background: rgba(10, 10, 10, .9);
+    border: 1px solid var(--glass-border);
+    
+    min-width: 120px;
+}
+    
+    /* PAGES */
+    .page-overlay {
+        padding-top: 80px;
+        padding-left: 16px;
+        padding-right: 16px;
+        overflow-x: hidden;
+    }
+    
+    .sub-header {
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+        padding: 15px 0;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .back-btn-gold {
+        font-size: 1rem;
+    }
+    
+    /* SHOP */
+    .shop-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding-bottom: 120px;
+    }
+    
+    .shop-card {
+        width: 100%;
+        overflow: hidden;
+        border-radius: 18px;
+    }
+    
+    .card-img {
+        height: 190px;
+    }
+    
+    .card-details {
+        padding: 18px;
+    }
+    
+    .card-price-val {
+        font-size: 1.1rem;
+    }
+    
+    .buy-btn-card {
+        padding: 15px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+    
+    /* PROFILE */
+    .account-wrap {
+        width: 100%;
+        padding-bottom: 130px;
+    }
+    
+    .avatar-section {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .avatar-pencil {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+    
+    .user-name {
+        font-size: 1.4rem;
+        text-align: center;
+        word-break: break-word;
+        margin-bottom: 25px;
+    }
+    
+    .settings-card {
+        width: 100%;
+        padding: 20px;
+        border-radius: 18px;
+    }
+    
+    .theme-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .theme-btn-acct {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+    }
+    
+    .social-buttons-wrap {
+        gap: 15px;
+    }
+    
+    .social-btn-acct {
+        padding: 18px;
+        font-size: 1rem;
+        border-radius: 14px;
+    }
+    
+    /* REGISTER */
+    #regModal {
+        padding: 15px;
+    }
+    
+    .reg-card {
+        width: 100%;
+        max-width: 420px;
+        padding: 25px;
+        border-radius: 22px;
+    }
+    
+    .reg-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .reg-input,
+    .reg-select {
+        padding: 16px;
+        font-size: 16px;
+        border-radius: 12px;
+    }
+    
+    .date-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .reg-complete-btn {
+        padding: 16px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+    
+    /* LOGIN */
+    #loginModal {
+        padding: 15px;
+    }
+    
+    #loginModal .reg-card {
+        width: 100%;
+        max-width: 420px;
+    }
+    
+    /* FLOAT */
+    .float-tanga {
+        font-size: 20px;
+    }
+}
     </style>
 </head>
 <body>
@@ -469,6 +714,34 @@
             </div>
 
             <div class="social-buttons-wrap">
+                <button
+onclick="logoutAccount()"
+style="
+width:100%;
+padding:20px;
+border-radius:12px;
+font-weight:bold;
+font-size:1.1rem;
+background:#ffaa00;
+color:black;
+margin-top:10px;
+">
+LOG OUT
+</button>
+                <button
+onclick="deleteAccount()"
+style="
+width:100%;
+padding:20px;
+border-radius:12px;
+font-weight:bold;
+font-size:1.1rem;
+background:#ff3333;
+color:white;
+margin-top:10px;
+">
+DELETE ACCOUNT
+</button>
                 <a href="https://discord.gg/CJYXEBp55" target="_blank" class="social-btn-acct discord-btn">DISCORD SERVER</a>
                 <a href="https://t.me/GVTX2026" target="_blank" class="social-btn-acct telegram-btn">TELEGRAM CHANNEL</a>
             </div>
@@ -496,7 +769,7 @@ placeholder="Password">
     onclick="openLogin()"
     id="loginOpenText">
 
-    Already have account?
+    
     </span>
 </div>
         </div>
@@ -504,7 +777,7 @@ placeholder="Password">
 
     <script>
         // Old SCRIPT_URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_vNXVG8ozEChgk6hYokw4lpsZKmYF6TjEdpUv9VZA7Z6Vb4Y92778eU6fxa_An8Zf/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyijfjH3UlVNvSZnpoVQdGNnbPM4XiseJen0ZJuY1AAVWV55Nq4qfLPHOFGfiEcX10h/exec';
         
         // --- GAME STATE ---
         let coins = parseInt(localStorage.getItem('gvtx_game_bal')) || 0;
@@ -527,8 +800,8 @@ placeholder="Password">
             },
             RU: {
                 mainTitle: 'КЛИК ДЛЯ <span>ИВЕНТА</span>', energy: 'ЛИМИТ:', back: '← НАЗАД',
-                market: 'МАГAЗИH', account: 'АККАУНТ',
-                shopT: 'ПРЕМИУМ МАГAЗИH', acctT: 'ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ',
+                market: 'МАГАЗИН', account: 'АККАУНТ',
+                shopT: 'ПРЕМИУМ МАГАЗИН', acctT: 'ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ',
                 buy: 'КУПИТЬ', lowBal: 'НЕ ХВАТАЕТ GVTX!', successP: 'ПОКУПКА УСПЕШНА!',
                 theme: 'НАСТРОЙКИ ТЕМЫ', themeDesc: 'Выберите цветовой режим.', dark: 'ТЕМНАЯ', light: 'СВЕТЛАЯ',
                 regTitle: 'ТЕРМИНАL ДОСТУПА', regP: 'Заполните все данные!', regSuccess: 'Регистрация успешна!',
@@ -764,7 +1037,7 @@ const p = document.getElementById('regPassword').value;
     </script>
     <script>
     // --- GOOGLE SHEETS BILAN BOG'LASH QISMI (YANGI) ---
-    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycby_vNXVG8ozEChgk6hYokw4lpsZKmYF6TjEdpUv9VZA7Z6Vb4Y92778eU6fxa_An8Zf/exec';
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyijfjH3UlVNvSZnpoVQdGNnbPM4XiseJen0ZJuY1AAVWV55Nq4qfLPHOFGfiEcX10h/exec';
     
     // 2. Tangalarni avtomatik saqlash funksiyasi
     function cloudSave() {
@@ -834,6 +1107,79 @@ function registerUser() {
     document.getElementById('regModal').style.display = 'none';
     
     initApp();
+}
+
+function logoutAccount() {
+    
+    localStorage.removeItem('gvtx_event_reg');
+    
+    location.reload();
+}
+
+function deleteAccount() {
+    
+    const isRu = activeLang === 'RU';
+    
+    const ask = isRu ?
+        'Удалить аккаунт? 😢' :
+        'Delete account? 😢';
+    
+    const yesText = isRu ? 'Да' : 'Yes';
+    const noText = isRu ? 'Нет' : 'No';
+    
+    const result = confirm(
+        ask + '\n\n' +
+        yesText + ' / ' + noText
+    );
+    
+    if (result) {
+        
+        alert(
+            isRu ?
+            'Аккаунт удалён... 😔' :
+            'Account deleted... 😔'
+        );
+        
+        localStorage.clear();
+        
+        setTimeout(() => {
+            location.reload();
+        }, 500);
+    }
+}
+
+function logoutAccount() {
+    
+    localStorage.removeItem('gvtx_event_reg');
+    
+    location.reload();
+}
+
+function loginAccount() {
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    const savedEmail = localStorage.getItem('gvtx_u_email');
+    const savedPassword = localStorage.getItem('gvtx_u_password');
+    const savedName = localStorage.getItem('gvtx_u_name');
+    
+    if (email === savedEmail && password === savedPassword) {
+        
+        localStorage.setItem('gvtx_event_reg', 'true');
+        
+        document.getElementById('loginModal').style.display = 'none';
+        
+        initApp();
+        
+    } else {
+        
+        alert(
+            activeLang === 'RU' ?
+            'Неверный логин или пароль' :
+            'Wrong email or password'
+        );
+    }
 }
     
 </script>
